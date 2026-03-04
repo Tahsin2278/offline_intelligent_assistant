@@ -1,4 +1,4 @@
-from task_manager import add_task, show_tasks, delete_task
+from backend.task_manager import add_task, show_tasks, delete_task
 
 print(add_task("Buy milk"))
 print(add_task("Finish capstone"))

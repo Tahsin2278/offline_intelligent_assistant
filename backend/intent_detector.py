@@ -1,26 +1,27 @@
-def detect_intent(user_input: str) -> str:
+def detect_intent(user_input: str):
     """
-    Detects user intent based on simple rule-based keyword matching.
-    Returns a string representing the detected intent.
+    Detect user intent and extract necessary data.
+    Returns: (intent, data)
     """
 
     user_input = user_input.lower().strip()
 
-    if any(word in user_input for word in ["add task", "create task", "new task"]):
-        return "add_task"
+    # ADD TASK
+    if user_input.startswith("add task"):
+        task_description = user_input.replace("add task", "").strip()
+        return "add_task", task_description
 
-    elif any(word in user_input for word in ["show tasks", "list tasks", "view tasks"]):
-        return "show_tasks"
+    # SHOW TASKS
+    elif user_input in ["show tasks", "list tasks", "view tasks"]:
+        return "show_tasks", None
 
-    elif any(word in user_input for word in ["delete task", "remove task"]):
-        return "delete_task"
-
-    elif any(op in user_input for op in ["+", "-", "*", "/"]):
-        return "calculate"
-
-    elif any(word in user_input for word in ["hello", "hi", "hey"]):
-        return "greeting"
+    # DELETE TASK
+    elif user_input.startswith("delete task"):
+        try:
+            task_number = int(user_input.replace("delete task", "").strip())
+            return "delete_task", task_number
+        except ValueError:
+            return "delete_task", None
 
     else:
-        return "unknown"
-    
+        return "unknown", None
