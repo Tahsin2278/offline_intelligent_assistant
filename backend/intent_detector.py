@@ -1,95 +1,67 @@
-def detect_intent(user_input: str):
+import re
+
+def detect_intent(user_input):
     """
-    Detects the user's intent based on their input.
-
-    Parameters:
-        user_input (str): The message entered by the user.
-
-    Returns:
-        tuple: A tuple containing the detected intent and related data.
+    Analyzes user input to determine intent and extract relevant data.
     """
 
     # Convert input to lowercase and remove extra spaces
     user_input = user_input.lower().strip()
 
-    # =========================
-    # BASIC CONVERSATION
-    # =========================
-
-    if user_input in ["hello", "hi", "hey"]:
+    # ------------------
+    # BASIC CONVERSATION 
+    # ------------------
+    if user_input in ["hi", "hello", "hey", "hola"]:
         return "greeting", None
-
-    elif user_input in ["how are you", "how are you doing"]:
+    if "how are you" in user_input:
         return "how_are_you", None
-
-    elif user_input in ["thank you", "thanks"]:
+    if user_input in ["thanks", "thank you"]:
         return "thanks", None
-
-    elif user_input in ["bye", "goodbye"]:
+    if user_input in ["bye", "goodbye", "exit"]:
         return "bye", None
 
-    # =========================
-    # NAME MEMORY
-    # =========================
-
-    elif user_input.startswith("my name is"):
-        name = user_input.replace("my name is", "").strip()
+    # ----------- 
+    # NAME MEMORY 
+    # -----------
+    if "my name is" in user_input:
+        name = user_input.split("my name is")[-1].strip()
         return "save_name", name
-
-    elif user_input in ["what is my name", "who am i"]:
+    if "what is my name" in user_input:
         return "show_name", None
 
-    # =========================
-    # TASK MANAGEMENT
-    # =========================
-
-    elif user_input.startswith("add task"):
-        task_description = user_input.replace("add task", "").strip()
-        return "add_task", task_description
-
-    elif user_input.startswith("add "):
-        task_description = user_input.replace("add", "", 1).strip()
-        return "add_task", task_description
-
-    elif user_input.startswith("remember to"):
-        task_description = user_input.replace("remember to", "", 1).strip()
-        return "add_task", task_description
-
-    elif user_input in ["show tasks", "list tasks", "view tasks"]:
+    # --------------- 
+    # TASK MANAGEMENT 
+    # ---------------
+    if "add task" in user_input:
+        task = user_input.split("add task")[-1].strip()
+        return "add_task", task
+    if "show tasks" in user_input or "view tasks" in user_input:
         return "show_tasks", None
-
-    elif user_input.startswith("delete task"):
+    if "delete task" in user_input:
         try:
-            task_number = int(user_input.replace("delete task", "").strip())
-            return "delete_task", task_number
-        except ValueError:
+            # Extract the number from the string
+            number = int(re.search(r'\d+', user_input).group())
+            return "delete_task", number
+        except (AttributeError, ValueError):
             return "delete_task", None
-
-    elif user_input in ["clear tasks", "delete all tasks", "clear all"]:
+    if "clear tasks" in user_input:
         return "clear_tasks", None
 
-    # =========================
-    # REMINDERS
-    # =========================
-
-    elif user_input.startswith("remind me to"):
-        reminder = user_input.replace("remind me to", "").strip()
+    # --------- 
+    # REMINDERS 
+    # ---------
+    if "remind me to" in user_input:
+        reminder = user_input.split("remind me to")[-1].strip()
         return "add_reminder", reminder
-
-    elif user_input in ["show reminders", "view reminders"]:
+    if "show reminders" in user_input:
         return "show_reminders", None
 
-    # =========================
-    # CALCULATOR
-    # =========================
-
-    elif user_input.startswith("calculate"):
+    # -------------------------- 
+    # CALCULATOR (Including sqrt) 
+    # --------------------------
+    # Triggered by 'calculate' or math keywords like 'sqrt'
+    if "calculate" in user_input or "sqrt" in user_input:
         expression = user_input.replace("calculate", "").strip()
         return "calculate", expression
 
-    # =========================
-    # UNKNOWN COMMAND
-    # =========================
-
-    else:
-        return "unknown", None
+    return "unknown", None
